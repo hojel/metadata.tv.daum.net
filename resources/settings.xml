@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<settings>
+    <category label="30000">
+	<setting label="30002" type="bool" id="TVDBArt" default="false"/>
+	<setting label="30006" type="bool" id="TVDBEpisode" default="false"/>
+	<setting label="30003" type="bool" id="GuessSeasonFromTitle" default="false"/>
+	<setting label="30004" type="bool" id="RemoveSeasonFromTitle" default="false" visible="eq(-1,true)"/>
+    </category>
+    <category label="30001">
+	<setting label="30005" type="bool" id="CleanPlotText" default="true"/>
+	<setting label="30007" type="text" id="SeasonMapURL" default="https://sites.google.com/site/xbmckorea/table/daumtv_extra.json"/>
+	<setting label="30008" type="bool" id="ManyDummyEp" default="false"/>
+    </category>
+</settings>

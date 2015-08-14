@@ -1,0 +1,646 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<scraper framework="1.1" date="2013-01-30" language="ko">
+	<NfoUrl dest="3">
+		<RegExp input="$$1" output="&lt;details&gt;&lt;url cache=&quot;daum-tv-\1.json&quot;&gt;http://m.movie.daum.net/data/movie/tv/detail.json?tvProgramId=\1&lt;/url&gt;&lt;id&gt;\1&lt;/id&gt;&lt;/details&gt;" dest="3">
+			<expression>movie\.daum\.net[^\?]*\?tvProgramId=(\d+)</expression>
+		</RegExp>
+	</NfoUrl>
+	<EpisodeGuideUrl dest="3">
+		<RegExp input="$$1" output="&lt;url&gt;http://movie.daum.net/tv/detail/episode.do?tvProgramId=\1&lt;/url&gt;" dest="3">
+			<expression>movie\.daum\.net[^\?]*\?tvProgramId=(\d+)</expression>
+		</RegExp>
+	</EpisodeGuideUrl>
+	<CreateSearchUrl dest="3">
+		<RegExp input="$$1 $$2" output="&lt;url&gt;http://movie.daum.net/search.do?type=tv&amp;q=\1&lt;/url&gt;" dest="3">
+			<expression trim="1"/>
+		</RegExp>
+	</CreateSearchUrl>
+	<GetSearchResults dest="1">
+		<RegExp input="$$4" output="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;&lt;results&gt;\1&lt;/results&gt;" dest="1">
+			<RegExp input="$$1" output="&lt;entity&gt;&lt;title&gt;\2&lt;/title&gt;&lt;year&gt;\3&lt;/year&gt;&lt;id&gt;\1&lt;/id&gt;&lt;url cache=&quot;daum-tv-\1.json&quot;&gt;http://m.movie.daum.net/data/movie/tv/detail.json?tvProgramId=\1&lt;/url&gt;&lt;/entity&gt;" dest="4">
+				<expression repeat="yes" trim="2,4">class="fl srch"&gt;&lt;a href="http://movie.daum.net/tv/detail/main.do\?tvProgramId=(\d+)"[^&gt;]*&gt;([^"]*)&lt;/a&gt;\s*\((\d*)\)&lt;/span&gt;[^\(]*"fs13"&gt;([^"]*)&lt;/span</expression>
+			</RegExp>
+			<RegExp input="$$1" output="&lt;entity&gt;&lt;title&gt;\2&lt;/title&gt;&lt;id&gt;\1&lt;/id&gt;&lt;url cache=&quot;daum-tv-\1.json&quot;&gt;http://m.movie.daum.net/data/movie/tv/detail.json?tvProgramId=\1&lt;/url&gt;&lt;/entity&gt;" dest="4+">
+				<expression repeat="yes" trim="2,4">class="fl srch"&gt;&lt;a href="http://movie.daum.net/tv/detail/main.do\?tvProgramId=(\d+)"[^&gt;]*&gt;([^"]*)&lt;/a&gt;\s*&lt;/span&gt;[^\(]*"fs13"&gt;([^"]*)&lt;/span</expression>
+			</RegExp>
+			<expression noclean="1"/>
+		</RegExp>
+	</GetSearchResults>
+	<GetDetails dest="3">
+		<RegExp input="$$5" output="&lt;details&gt;\1&lt;/details&gt;" dest="3">
+			<RegExp input="$$1" output="&lt;id&gt;\1&lt;/id&gt;" dest="5">
+				<expression>"tvProgramId":(\d*)</expression>
+			</RegExp>
+			<RegExp input="$$6" output="&lt;title&gt;\1&lt;/title&gt;" dest="5+">
+				<RegExp input="$$1" output="\1" dest="6">
+					<expression>"titleKo":"(.*?)"</expression>
+				</RegExp>
+				<RegExp conditional="RemoveSeasonFromTitle" input="$$6" output="\1" dest="6">
+					<expression trim="1">^(.*) 시즌 *(\d+) *$</expression>
+				</RegExp>
+				<expression />
+			</RegExp>
+			<!-- BUG: titleEn is not set for Mobile!!! -->
+			<RegExp input="$$1" output="&lt;originaltitle&gt;\1&lt;/originaltitle&gt;" dest="5+">
+				<expression>"titleEn":"([^"]+)"</expression>
+			</RegExp>
+			<RegExp input="$$1" output="&lt;year&gt;\1&lt;/year&gt;" dest="5+">
+				<expression>"prodYear":(\d*)</expression>
+			</RegExp>
+			<RegExp input="$$1" output="&lt;premiered&gt;\1-\2-\3&lt;/premiered&gt;" dest="5+">
+				<expression>"startDate":"(\d{4})(\d{2})(\d{2})"</expression>
+			</RegExp>
+			<RegExp input="$$6" output="&lt;studio&gt;\1&lt;/studio&gt;" dest="5+">
+				<RegExp input="$$1" output="\1" dest="6">
+					<expression>"channel":{(.*?)}</expression>
+				</RegExp>
+				<expression repeat="yes">"titleKo":"(.*?)"</expression>
+			</RegExp>
+			<RegExp input="$$6" output="&lt;country&gt;\1&lt;/country&gt;" dest="5+">
+				<RegExp input="$$1" output="\1" dest="6">
+					<expression>"countries":\[(.*?)\]</expression>
+				</RegExp>
+				<expression repeat="yes">"countryKo":"(.*?)"</expression>
+			</RegExp>
+			<RegExp input="$$6" output="&lt;genre&gt;\1&lt;/genre&gt;" dest="5+">
+				<RegExp input="$$1" output="\1" dest="6">
+					<expression>"genres":\[(.*?)\]</expression>
+				</RegExp>
+				<expression repeat="yes">"genreName":"(.*?)"</expression>
+			</RegExp>
+			<RegExp conditional="!CleanPlotText" input="$$1" output="&lt;plot&gt;\1&lt;/plot&gt;" dest="5+">
+				<expression>"introduce":"(.*?)"</expression>
+			</RegExp>
+			<RegExp conditional="CleanPlotText" input="$$6" output="&lt;plot&gt;\1&lt;/plot&gt;" dest="5+">
+				<RegExp input="$$7" output="\1" dest="6">
+					<RegExp input="$$1" output="\1" dest="7">
+						<expression>"introduce":"(.*?)"</expression>
+					</RegExp>
+					<expression repeat="yes" noclean="1">(?:\\r|(\\[^r]|[^\\]))</expression>
+				</RegExp>
+				<expression trim="1" />
+			</RegExp>
+			<RegExp input="$$1" output="&lt;mpaa&gt;\1&lt;/mpaa&gt;" dest="5+">
+				<expression>"admissionDesc":"(.*?)"</expression>
+			</RegExp>
+			<RegExp input="$$1" output="&lt;rating&gt;\1&lt;/rating&gt;" dest="5+">
+				<expression>"pointAvg":(\d\.\d)</expression>
+			</RegExp>
+			<!-- <votes> -->
+			<!-- poster thumb -->
+			<RegExp input="$$6" output="&lt;thumb aspect=&quot;poster&quot;&gt;\1&lt;/thumb&gt;" dest="5+">
+				<RegExp input="$$1" output="\1" dest="6">
+					<expression>"photo":{(.*?)}</expression>
+				</RegExp>
+				<expression>"fullname":"(.*?)"</expression>
+			</RegExp>
+
+			<RegExp input="$$2" output="&lt;url function=&quot;ParseDaumMoviePage&quot; cache=&quot;daum-movie-\1.html&quot;&gt;http://movie.daum.net/tv/detail/main.do?tvProgramId=\1&lt;/url&gt;" dest="5+">
+				<expression />
+			</RegExp>
+			<RegExp input="$$2" output="&lt;url function=&quot;ParseDaumCast&quot; cache=&quot;daum-tcast-\1.json&quot;&gt;http://m.movie.daum.net/data/movie/tv/cast_crew.json?pageNo=1&amp;pageSize=100&amp;tvProgramId=\1&lt;/url&gt;" dest="5+">
+				<expression />
+			</RegExp>
+			<!-- BUG: TitleEn is not set for Mobile!!!
+			<RegExp conditional="TVDBArt" input="$$10" output="&lt;chain function=&quot;GetTVDBArtByTitleChain&quot;&gt;\1&lt;/chain&gt;" dest="5+">
+				<expression>(.+)</expression>
+			</RegExp>
+			-->
+			<RegExp conditional="TVDBArt" input="$$2" output="&lt;chain function=&quot;GetTVDBArtByDaumIdChain&quot;&gt;\1&lt;/chain&gt;" dest="5+">
+				<expression />
+			</RegExp>
+			<RegExp input="$$2" output="&lt;url function=&quot;ParseDaumPhoto&quot; cache=&quot;daum-timg-\1.json&quot;&gt;http://m.movie.daum.net/data/movie/photo/tv/list.json?pageNo=1&amp;pageSize=200&amp;id=\1&lt;/url&gt;" dest="5+">
+				<expression />
+			</RegExp>
+			<RegExp input="$$2" output="&lt;episodeguide&gt;&lt;url cache=&quot;daum-tvep-\1.json&quot;&gt;http://m.movie.daum.net/data/movie/tv/episode.json?pageNo=1&amp;pageSize=1000&amp;tvProgramId=\1&lt;/url&gt;&lt;/episodeguide&gt;" dest="5+">
+				<expression/>
+			</RegExp>
+			<expression noclean="1"/>
+		</RegExp>
+	</GetDetails>
+	<!-- generate <episodeguide/episode> table from the given url in <episodeguide> -->
+	<!--
+	main body of original is moved to GetDaumEpisodeList
+	to support season
+	-->
+	<GetEpisodeList dest="4">
+		<RegExp input="$$5" output="&lt;episodeguide&gt;\1&lt;/episodeguide&gt;" dest="4">
+			<RegExp input="$$2" output="\1" dest="10">
+				<expression>tvProgramId=(\d+)</expression>
+			</RegExp>
+			<!-- season from title -->
+			<RegExp input="$$10" output="&lt;chain function=&quot;GetEpisodeListByIdChain&quot;&gt;\1&lt;/chain&gt;" dest="5">
+				<expression />
+			</RegExp>
+			<!-- season from external table
+			<RegExp input="$$10" output="&lt;chain function=&quot;GetDaumEpisodeListFromTableByIdChain&quot;&gt;\1&lt;/chain&gt;" dest="5">
+				<expression />
+			</RegExp>
+			-->
+			<expression noclean="1" />
+		</RegExp>
+	</GetEpisodeList>
+	<!-- get episode plot for the given episode -->
+	<GetEpisodeDetails dest="4">
+		<RegExp input="$$5" output="&lt;details&gt;\1&lt;/details&gt;" dest="4">
+			<RegExp input="$$2" output="&lt;chain function=&quot;GetDaumEpisodeDetailsChain&quot;&gt;\1_\2_\3_$$3&lt;/chain&gt;" dest="5">
+				<expression>DAUM_(\d*)_(\d*)_(\d+)</expression>
+			</RegExp>
+			<RegExp input="$$2" output="&lt;chain function=&quot;GetTVDBEpisodeDetailsChain&quot;&gt;\1_\2_$$3&lt;/chain&gt;" dest="5">
+				<expression>TVDB_(\d*)_(\d+)</expression>
+			</RegExp>
+			<RegExp input="$$2" output="&lt;title&gt;&lt;/title&gt;&lt;&gt;season&lt;\1&gt;/season&lt;episode&gt;\2&lt;/episode&gt;" dest="5">
+				<expression>DUMMY_(\d*)_(\d+)</expression>
+			</RegExp>
+			<expression noclean="1" />
+		</RegExp>
+	</GetEpisodeDetails>
+	<!-- #############################################
+		Cast / Photo
+	-->
+	<ParseDaumCast dest="4">
+		<RegExp input="$$5" output="&lt;details&gt;\1&lt;/details&gt;" dest="4">
+			<RegExp input="$$1" output="&lt;actor&gt;&lt;name&gt;\1&lt;/name&gt;&lt;role&gt;\3&lt;/role&gt;&lt;thumb&gt;\2&lt;/thumb&gt;&lt;/actor&gt;" dest="5">
+				<RegExp input="$$1" output="\1" dest="6">
+					<expression>"data":\[(.*)\],"page"</expression>
+				</RegExp>
+				<expression repeat="yes">"nameKo":"([^"]*)"[^}]*"fullname":"([^"]*)"[^}]*}[^}]*"castcrewCastName":"(?:주연|출연|특별출연)","castcrewTitleKo":"([^"]*)"</expression>
+			</RegExp>
+			<RegExp input="$$1" output="&lt;director&gt;\1&lt;/director&gt;" dest="5+">
+				<expression>"nameKo":"([^"]*)"[^}]*}[^}]*"castcrewCastName":"연출"</expression>
+			</RegExp>
+			<RegExp input="$$1" output="&lt;credits&gt;\1&lt;/credits&gt;" dest="5+">
+				<expression>"nameKo":"([^"]*)"[^}]*}[^}]*"castcrewCastName":"극본"</expression>
+			</RegExp>
+			<expression noclean="1"/>
+		</RegExp>
+	</ParseDaumCast>
+	<!-- guessing meaning of photoCategory
+		1: 고해상도 포스터
+		2: 고해상도 팬아트
+		3: 홍보사제공 그외
+		50: 저해상도 포스터 or 사용자 사진
+		53: 저해상도 포스터
+	-->
+	<ParseDaumPhoto dest="4">
+		<RegExp input="$$5" output="&lt;details&gt;\1&lt;/details&gt;" dest="4">
+			<RegExp input="$$1" output="\1" dest="3">
+				<expression>"data":\[(.*)\],"page"</expression>
+			</RegExp>
+			<RegExp input="$$3" output="&lt;thumb aspect=&quot;poster&quot; preview=&quot;\2&quot;&gt;\1&lt;/thumb&gt;" dest="5">
+				<expression repeat="yes">"photoCategory":"(?:1)"[^}]*"fullname":"(.*?)"[^}]*"thumbnail":"(.*?)"</expression>
+			</RegExp>
+			<RegExp input="$$6" output="&lt;fanart&gt;\1&lt;/fanart&gt;" dest="5+">
+				<RegExp input="$$3" output="&lt;thumb preview=&quot;\2&quot;&gt;\1&lt;/thumb&gt;" dest="6">
+					<expression repeat="yes">"photoCategory":"(?:2|50)"[^}]*"fullname":"(.*?)"[^}]*"thumbnail":"(.*?)"</expression>
+				</RegExp>
+				<expression noclean="1"/>
+			</RegExp>
+			<expression noclean="1"/>
+		</RegExp>
+	</ParseDaumPhoto>
+	<!-- #############################################
+		functions needed for GetEpisodeList
+	-->
+	<GetEpisodeListByIdChain dest="4">
+		<RegExp input="$$5" output="&lt;episodeguide&gt;\1&lt;/episodeguide&gt;" dest="4">
+			<RegExp input="$$1" output="&lt;url function=&quot;GetEpisodeListById&quot; cache=&quot;daum-tv-\1.json&quot;&gt;http://m.movie.daum.net/data/movie/tv/detail.json?tvProgramId=\1&lt;/url&gt;" dest="5">
+				<expression />
+			</RegExp>
+			<expression noclean="1" />
+		</RegExp>
+	</GetEpisodeListByIdChain>
+	<GetEpisodeListById dest="4">
+		<RegExp input="$$6" output="&lt;episodeguide&gt;\1&lt;/episodeguide&gt;" dest="4">
+			<RegExp input="$$1" output="\1" dest="10">
+				<expression>"tvProgramId":(\d*)</expression>
+			</RegExp>
+			<RegExp input="" output="1" dest="11">
+				<expression />
+			</RegExp>
+			<RegExp input="$$1" output="\1" dest="5">
+				<expression>"titleKo":"(.*?)"</expression>
+			</RegExp>
+			<RegExp conditional="GuessSeasonFromTitle" input="$$5" output="\1" dest="11">
+				<expression trim="1">시즌 *(\d+) *$</expression>
+			</RegExp>
+			<!-- Priority 1: Daum -->
+			<RegExp input="$$10_$$11" output="&lt;chain function=&quot;GetDaumEpisodeListByIdSeasonChain&quot;&gt;\1&lt;/chain&gt;" dest="6">
+				<expression />
+			</RegExp>
+			<!-- Priority 2: TVDB -->
+			<RegExp input="$$10" output="&lt;chain function=&quot;GetTVDBEpisodeListByDaumIdChain&quot;&gt;\1&lt;/chain&gt;" dest="6+">
+				<expression />
+			</RegExp>
+			<!-- Fallback: Dummy -->
+			<RegExp input="$$10_$$11" output="&lt;chain function=&quot;GetDummyEpisodeListByIdSeasonChain&quot;&gt;\1&lt;/chain&gt;" dest="6+">
+				<expression />
+			</RegExp>
+			<expression noclean="1" />
+		</RegExp>
+	</GetEpisodeListById>
+	<GetDaumEpisodeListByIdSeasonChain dest="4">
+		<RegExp input="$$5" output="&lt;episodeguide&gt;\1&lt;/episodeguide&gt;" dest="4">
+			<!-- set $$10(id), $$11(season) -->
+			<RegExp input="$$1" output="&lt;chain function=&quot;SetDaumIdSeasonChain&quot;&gt;\1&lt;/chain&gt;" dest="5">
+				<expression />
+			</RegExp>
+			<!-- use $$10(daumid), $$11(season) -->
+			<RegExp input="$$1" output="&lt;url function=&quot;GetDaumEpisodeList&quot; cache=&quot;daum-tvep-\1.json&quot;&gt;http://m.movie.daum.net/data/movie/tv/episode.json?pageNo=1&amp;pageSize=1000&amp;tvProgramId=\1&lt;/url&gt;" dest="5+">
+				<expression>(\d+)_(\d+)</expression>
+			</RegExp>
+			<expression noclean="1" />
+		</RegExp>
+	</GetDaumEpisodeListByIdSeasonChain>
+	<!--
+	return: $$10:daumid,$$11:season
+	-->
+	<SetDaumIdSeasonChain clearbuffers="no" dest="4">
+		<RegExp input="" output="&lt;episodeguide&gt;&lt;/episodeguide&gt;" dest="4">
+			<RegExp input="$$1" output="\1" dest="10">
+				<expression>(\d+)_(\d+)</expression>
+			</RegExp>
+			<RegExp input="$$1" output="\2" dest="11">
+				<expression>(\d+)_(\d+)</expression>
+			</RegExp>
+			<expression />
+		</RegExp>
+	</SetDaumIdSeasonChain>
+	<!--
+	prerequisite: $$10:daumid,$$11:season
+	-->
+	<GetDaumEpisodeList dest="4">
+		<RegExp input="$$5" output="&lt;episodeguide&gt;\1&lt;/episodeguide&gt;" dest="4">
+			<RegExp input="$$1" output="&lt;episode&gt;&lt;url cache=&quot;daum-tvep-$$10.json&quot;&gt;http://m.movie.daum.net/data/movie/tv/episode.json?pageNo=1&amp;pageSize=1000&amp;tvProgramId=$$10&lt;/url&gt;&lt;season&gt;$$11&lt;/season&gt;&lt;epnum&gt;\2&lt;/epnum&gt;&lt;id&gt;DAUM_$$10_$$11_\1&lt;/id&gt;&lt;/episode&gt;" dest="5">
+				<!-- reach to limit of regexp buffer size?
+				<RegExp input="$$1" output="\1" dest="6">
+					<expression>"data":\[(.+)\],"page"</expression>
+				</RegExp>
+				-->
+				<expression repeat="yes">"episodeId":(\d+),"episodeSeq":(\d+)</expression>
+			</RegExp>
+			<expression noclean="1"/>
+		</RegExp>
+	</GetDaumEpisodeList>
+	<GetDaumEpisodeDetailsChain dest="4">
+		<RegExp input="$$5" output="&lt;details&gt;\1&lt;/details&gt;" dest="4">
+			<RegExp input="$$1" output="&lt;chain function=&quot;SetDaumSeasonEpisodeIdChain&quot;&gt;\1_\2&lt;/chain&gt;" dest="5">
+				<expression>\d*_(\d*)_(\d+)</expression>
+			</RegExp>
+			<RegExp input="$$1" output="&lt;url function=&quot;GetDaumEpisodeDetails&quot; cache=&quot;daum-tvep-\1.json&quot;&gt;\2&lt;/url&gt;" dest="5+">
+				<expression>(\d*)_\d*_\d+_(.*)</expression>
+			</RegExp>
+			<expression noclean="1"/>
+		</RegExp>
+	</GetDaumEpisodeDetailsChain>
+	<SetDaumSeasonEpisodeIdChain clearbuffers="no" dest="4">
+		<RegExp input="" output="&lt;details&gt;&lt;/details&gt;" dest="4">
+			<RegExp input="$$1" output="\1" dest="11">
+				<expression>(\d+)_</expression>
+			</RegExp>
+			<RegExp input="$$1" output="\1" dest="12">
+				<expression>_(\d+)</expression>
+			</RegExp>
+			<expression />
+		</RegExp>
+	</SetDaumSeasonEpisodeIdChain>
+	<!--
+		prerequisite: $$11(season), $$12(epid)
+	-->
+	<GetDaumEpisodeDetails dest="4">
+		<RegExp input="$$5" output="&lt;details&gt;\1&lt;/details&gt;" dest="4">
+			<RegExp input="$$1" output="\1" dest="6">
+				<expression noclean="1">"episodeId":$$12,([^}]+)</expression>
+			</RegExp>
+			<RegExp input="$$6" output="&gt;season&lt;$$11&gt;/season&lt;episode&gt;\1&lt;/episode&gt;" dest="5">
+				<expression>"episodeSeq":(\d*)</expression>
+			</RegExp>
+			<RegExp input="$$6" output="&lt;title&gt;\1&lt;/title&gt;" dest="5+">
+				<expression>"episodeTitle":(?:"|null)([^",]*)</expression>
+			</RegExp>
+			<RegExp input="$$6" output="&lt;aired&gt;\1-\2-\3&lt;/aired&gt;" dest="5+">
+				<expression>"telecastDate":"(\d{4})(\d{2})(\d{2})"</expression>
+			</RegExp>
+			<RegExp input="$$6" output="&lt;rating&gt;\1&lt;/rating&gt;" dest="5+">
+				<expression>"rate":([\d\.]*)</expression>
+			</RegExp>
+			<RegExp conditional="!CleanPlotText" input="$$6" output="&lt;plot&gt;\2&lt;/plot&gt;" dest="5+">
+				<expression trim="1">"episodeIntroduce":"(.*?)"</expression>
+			</RegExp>
+			<RegExp conditional="CleanPlotText" input="$$7" output="&lt;plot&gt;\1&lt;/plot&gt;" dest="5+">
+				<RegExp input="$$8" output="\1" dest="7">
+					<RegExp input="$$6" output="\1" dest="8">
+						<expression>"episodeIntroduce":"(.*?)"</expression>
+					</RegExp>
+					<expression repeat="yes" noclean="1">(?:\\r|(\\[^r]|[^\\]))</expression>
+				</RegExp>
+				<expression trim="1" />
+			</RegExp>
+			<expression noclean="1"/>
+		</RegExp>
+	</GetDaumEpisodeDetails>
+	<!-- #############################################
+		function needed for Dummy Episode
+	-->
+	<GetDummyEpisodeListByIdSeasonChain dest="4">
+		<RegExp input="$$5" output="&lt;episodeguide&gt;\1&lt;/episodeguide&gt;" dest="4">
+			<RegExp input="$$1" output="\2" dest="11">
+				<expression>(\d+)_(\d+)</expression>
+			</RegExp>
+			<RegExp input="$$7" output="\1" dest="5">
+				<RegExp input="" output="24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1" dest="6">
+					<expression/>
+				</RegExp>
+				<RegExp input="$$6" output="&lt;episode&gt;&lt;url&gt;&lt;/url&gt;&lt;season&gt;$$11&lt;/season&gt;&lt;epnum&gt;\1&lt;/epnum&gt;&lt;id&gt;DUMMY_$$11_\1&lt;/id&gt;&lt;/episode&gt;" dest="7">
+					<expression repeat="yes">(\d+)</expression>
+				</RegExp>
+				<expression noclean="1"/>
+			</RegExp>
+			<expression noclean="1"/>
+		</RegExp>
+	</GetDummyEpisodeListByIdSeasonChain>
+	<!-- #############################################
+		function needed for Table Lookup
+	-->
+	<GetDaumEpisodeListFromTableByIdChain dest="4">
+		<RegExp input="$$5" output="&lt;episodeguide&gt;\1&lt;/episodeguide&gt;" dest="4">
+			<!-- set $$10(id) -->
+			<RegExp input="$$1" output="&lt;chain function=&quot;SetDaumIdChain&quot;&gt;\1&lt;/chain&gt;" dest="5">
+				<expression />
+			</RegExp>
+			<!-- set $$11(season) -->
+			<RegExp input="$INFO[SeasonMapURL]" output="&lt;url function=&quot;LookupSeasonFromTableById&quot; cache=&quot;daum-tvtbl.json&quot;&gt;\1&lt;/url&gt;" dest="5+">
+				<expression />
+			</RegExp>
+			<!-- get list based on $$10 & $$11 -->
+			<RegExp input="$$1" output="&lt;url function=&quot;GetDaumEpisodeList&quot; cache=&quot;daum-tvep-\1.json&quot;&gt;http://m.movie.daum.net/data/movie/tv/episode.json?pageNo=1&amp;pageSize=1000&amp;tvProgramId=\1&lt;/url&gt;" dest="5+">
+				<expression />
+			</RegExp>
+			<expression noclean="1" />
+		</RegExp>
+	</GetDaumEpisodeListFromTableByIdChain>
+	<!-- return: $$10:daumid -->
+	<SetDaumIdChain clearbuffers="no" dest="4">
+		<RegExp input="" output="&lt;episodeguide&gt;&lt;/episodeguide&gt;" dest="4">
+			<RegExp input="$$1" output="\1" dest="10">
+				<expression />
+			</RegExp>
+			<expression />
+		</RegExp>
+	</SetDaumIdChain>
+	<!--
+	prerequisite: $$10:daumid
+	return: $$11:season, $$12:tvdbid
+	-->
+	<LookupSeasonFromTableById clearbuffers="no" dest="4">
+		<RegExp input="" output="&lt;episodeguide&gt;&lt;/episodeguide&gt;" dest="4">
+			<RegExp input="$$1" output="\1" dest="5">
+				<expression>"daumid":$$10,([^}]+)</expression>
+			</RegExp>
+			<RegExp input="" output="1" dest="11">
+				<expression />
+			</RegExp>
+			<RegExp input="$$5" output="\1" dest="11">
+				<expression>"season":(\d+)</expression>
+			</RegExp>
+			<RegExp input="$$5" output="\1" dest="12">
+				<expression clear="yes">"tvdbid":(\d+)</expression>
+			</RegExp>
+			<expression />
+		</RegExp>
+	</LookupSeasonFromTableById>
+	<!-- Parse web page for missing info. Refer GetTVDBArtByDaumId -->
+	<ParseDaumMoviePage dest="4">
+		<RegExp input="$$5" output="&lt;details&gt;\1&lt;/details&gt;" dest="4">
+			<RegExp input="$$1" output="&lt;originaltitle&gt;\1&lt;/originaltitle&gt;" dest="5">
+				<expression>span class="eng"&gt;([^&lt;]+)&lt;/span</expression>
+			</RegExp>
+			<expression noclean="1" />
+		</RegExp>
+	</ParseDaumMoviePage>
+	<!-- #############################################
+		function needed for TVDB fanart
+	-->
+	<!-- additional steps since titleEn is not set -->
+	<GetTVDBArtByDaumIdChain dest="4">
+		<RegExp input="$$5" output="&lt;details&gt;\1&lt;/details&gt;" dest="4">
+			<RegExp input="$$1" output="&lt;url function=&quot;GetTVDBArtByDaumId&quot; cache=&quot;daum-movie-\1.html&quot;&gt;http://movie.daum.net/tv/detail/main.do?tvProgramId=\1&lt;/url&gt;" dest="5+">
+				<expression />
+			</RegExp>
+			<expression noclean="1" />
+		</RegExp>
+	</GetTVDBArtByDaumIdChain>
+	<GetTVDBArtByDaumId dest="4">
+		<RegExp input="$$5" output="&lt;details&gt;\1&lt;/details&gt;" dest="4">
+			<RegExp input="$$1" output="&lt;chain function=&quot;GetTVDBArtByTitleChain&quot;&gt;\1&lt;/chain&gt;" dest="5">
+				<expression>span class="eng"&gt;([^&lt;]+)&lt;/span</expression>
+			</RegExp>
+			<expression noclean="1" />
+		</RegExp>
+	</GetTVDBArtByDaumId>
+	<!--
+	api: thetvdb.com/api/GetSeries.php?seriesname=<query>
+	web: thetvdb.com/?string=<query>&tab=listseries&function=Search
+	api would be correct choise, but api showed worse result than web (ex: House M.D.)
+	-->
+	<GetTVDBArtByTitleChain dest="4">
+		<RegExp input="$$5" output="&lt;details&gt;\1&lt;/details&gt;" dest="4">
+			<RegExp input="$$1" output="&lt;url function=&quot;GetTVDBArtByTitle&quot;&gt;http://thetvdb.com/?string=\1&amp;tab=listseries&amp;function=Search&lt;/url&gt;" dest="5">
+				<expression encode="1" />
+			</RegExp>
+			<expression noclean="1" />
+		</RegExp>
+	</GetTVDBArtByTitleChain>
+	<GetTVDBArtByTitle dest="4">
+		<RegExp input="$$5" output="&lt;details&gt;\1&lt;/details&gt;" dest="4">
+			<RegExp input="$$1" output="&lt;url function=&quot;GetTVDBArtById&quot;&gt;http://thetvdb.com/api/1D62F2F90030C444/series/\1/banners.xml&lt;/url&gt;" dest="5">
+				<expression>td class="odd"&gt;(\d+)&lt;/td</expression>
+			</RegExp>
+			<expression noclean="1" />
+		</RegExp>
+	</GetTVDBArtByTitle>
+	<GetTVDBArtById dest="4">
+		<RegExp input="$$5" output="&lt;details&gt;\1&lt;/details&gt;" dest="4">
+			<RegExp input="" output="http://thetvdb.com/banners/" dest="3">
+				<expression />
+			</RegExp>
+			<RegExp input="$$1" output="&lt;thumb aspect=&quot;poster&quot;&gt;$$3\1&lt;/thumb&gt;" dest="5">
+				<expression repeat="yes">&lt;BannerPath&gt;(.+?)&lt;/BannerPath&gt;[^&lt;]*&lt;BannerType&gt;poster&lt;/BannerType&gt;</expression>
+			</RegExp>
+			<RegExp input="$$1" output="&lt;thumb aspect=&quot;banner&quot;&gt;$$3\1&lt;/thumb&gt;" dest="5+">
+				<expression repeat="yes">&lt;BannerPath&gt;(.+?)&lt;/BannerPath&gt;[^&lt;]*&lt;BannerType&gt;series&lt;/BannerType&gt;[^&lt;]*&lt;BannerType2&gt;graphical&lt;/BannerType2&gt;</expression>
+			</RegExp>
+			<RegExp input="$$1" output="&lt;thumb aspect=&quot;banner&quot; type=&quot;season&quot; season=&quot;\2&quot;&gt;$$3\1&lt;/thumb&gt;" dest="5+">
+				<expression repeat="yes">&lt;BannerPath&gt;(.+?)&lt;/BannerPath&gt;[^&lt;]*&lt;BannerType&gt;season&lt;/BannerType&gt;.*?&lt;Season&gt;(.*?)&lt;/Season&gt;</expression>
+			</RegExp>
+			<RegExp input="$$6" output="&lt;fanart url=&quot;$$3&quot;&gt;\1&lt;/fanart&gt;" dest="5+">
+				<RegExp input="$$1" output="&lt;thumb preview=&quot;\2&quot;&gt;\1&lt;/thumb&gt;" dest="6">
+					<expression repeat="yes">&lt;BannerPath&gt;(.+?)&lt;/BannerPath&gt;[^&lt;]*&lt;BannerType&gt;fanart&lt;/BannerType&gt;.*?&lt;ThumbnailPath&gt;(.*?)&lt;/ThumbnailPath&gt;</expression>
+				</RegExp>
+				<expression noclean="1" />
+			</RegExp>
+			<expression noclean="1" />
+		</RegExp>
+	</GetTVDBArtById>
+	<!-- #############################################
+		function needed for TVDB episode
+	-->
+	<!-- additional steps since titleEn is not set -->
+	<GetTVDBEpisodeListByDaumIdChain dest="4">
+		<RegExp input="$$5" output="&lt;episodeguide&gt;\1&lt;/episodeguide&gt;" dest="4">
+			<RegExp input="$$1" output="&lt;url function=&quot;GetTVDBEpisodeListByDaumId&quot; cache=&quot;daum-movie-\1.html&quot;&gt;http://movie.daum.net/tv/detail/main.do?tvProgramId=\1&lt;/url&gt;" dest="5">
+				<expression />
+			</RegExp>
+			<expression noclean="1" />
+		</RegExp>
+	</GetTVDBEpisodeListByDaumIdChain>
+	<GetTVDBEpisodeListByDaumId dest="4">
+		<RegExp input="$$5" output="&lt;episodeguide&gt;\1&lt;/episodeguide&gt;" dest="4">
+			<RegExp input="$$1" output="&lt;chain function=&quot;GetTVDBEpisodeListByTitleChain&quot;&gt;\1&lt;/chain&gt;" dest="5">
+				<expression>span class="eng"&gt;([^&lt;]+)&lt;/span</expression>
+			</RegExp>
+			<expression noclean="1" />
+		</RegExp>
+	</GetTVDBEpisodeListByDaumId>
+	<!--
+	api: thetvdb.com/api/GetSeries.php?seriesname=<query>
+	web: thetvdb.com/?string=<query>&tab=listseries&function=Search
+	api is a correct solution, but api shows worse result than web (ex: House M.D.)
+	-->
+	<GetTVDBEpisodeListByTitleChain dest="4">
+		<RegExp input="$$5" output="&lt;episodeguide&gt;\1&lt;/episodeguide&gt;" dest="4">
+			<RegExp input="$$1" output="&lt;url function=&quot;GetTVDBEpisodeListByTitle&quot;&gt;http://thetvdb.com/?string=\1&amp;tab=listseries&amp;function=Search&lt;/url&gt;" dest="5">
+				<expression encode="1" />
+			</RegExp>
+			<expression noclean="1" />
+		</RegExp>
+	</GetTVDBEpisodeListByTitleChain>
+	<GetTVDBEpisodeListByTitle dest="4">
+		<RegExp input="$$5" output="&lt;episodeguide&gt;\1&lt;/episodeguide&gt;" dest="4">
+			<RegExp input="$$1" output="&lt;url function=&quot;GetTVDBEpisodeListById&quot; cache=&quot;tvdb-ep-\1.xml&quot;&gt;http://thetvdb.com/api/1D62F2F90030C444/series/\1/all/ko.zip&lt;/url&gt;" dest="5">
+				<expression>td class="odd"&gt;(\d+)&lt;/td</expression>
+			</RegExp>
+			<expression noclean="1" />
+		</RegExp>
+	</GetTVDBEpisodeListByTitle>
+	<GetTVDBEpisodeListById dest="4">
+		<RegExp input="$$5" output="&lt;episodeguide&gt;\1&lt;/episodeguide&gt;" dest="4">
+			<RegExp input="$$1" output="\1" dest="10">
+				<expression>&lt;Series&gt;\s*&lt;id&gt;(\d+)&lt;/id&gt;</expression>
+			</RegExp>
+			<RegExp input="$$1" output="&lt;episode&gt;&lt;title&gt;\2&lt;/title&gt;&lt;url cache=&quot;tvdb-ep-$$10.xml&quot;&gt;http://thetvdb.com/api/1D62F2F90030C444/series/$$10/all/ko.zip&lt;/url&gt;&lt;epnum&gt;\3&lt;/epnum&gt;&lt;season&gt;\5&lt;/season&gt;&lt;id&gt;TVDB_$$10_\1&lt;/id&gt;&lt;aired&gt;\4&lt;/aired&gt;&lt;/episode&gt;" dest="5">
+				<expression repeat="yes">&lt;Episode&gt;.*?&lt;id&gt;([0-9]+).*?&lt;EpisodeName&gt;([^&lt;]*).*?&lt;EpisodeNumber&gt;([0-9]+)[^&lt;]*.*?&lt;FirstAired&gt;([^&lt;]*)&lt;/FirstAired&gt;.*?&lt;SeasonNumber&gt;([0-9]+)[^&lt;]*.*?&lt;/Episode&gt;</expression>
+			</RegExp>
+			<expression noclean="1" />
+		</RegExp>
+	</GetTVDBEpisodeListById>
+	<GetTVDBEpisodeDetailsChain dest="4">
+		<RegExp input="$$5" output="&lt;details&gt;\1&lt;/details&gt;" dest="4">
+			<RegExp input="$$1" output="&lt;chain function=&quot;SetTVDBEpisodeIdChain&quot;&gt;\1&lt;/chain&gt;" dest="5">
+				<expression>\d*_(\d+)</expression>
+			</RegExp>
+			<RegExp input="$$1" output="&lt;url function=&quot;GetTVDBEpisodeDetails&quot; cache=&quot;tvdb-ep-\1.xml&quot;&gt;\2&lt;/url&gt;" dest="5+">
+				<expression>(\d*)_\d+_(.*)</expression>
+			</RegExp>
+			<expression noclean="1"/>
+		</RegExp>
+	</GetTVDBEpisodeDetailsChain>
+	<SetTVDBEpisodeIdChain clearbuffers="no" dest="4">
+		<RegExp input="" output="&lt;details&gt;&lt;/details&gt;" dest="4">
+			<RegExp input="$$1" output="\1" dest="12">
+				<expression>(\d+)</expression>
+			</RegExp>
+			<expression />
+		</RegExp>
+	</SetTVDBEpisodeIdChain>
+	<!--
+		prerequisite: $$12(epid)
+	-->
+	<GetTVDBEpisodeDetails dest="3">
+		<RegExp input="$$4" output="&lt;details&gt;\1&lt;/details&gt;" dest="3">
+			<RegExp input="$$1" output="\1" dest="8">
+				<expression noclean="1">&lt;Episode&gt;.*?&lt;id&gt;$$12&lt;/id&gt;(.*?)&lt;/Episode&gt;</expression>
+			</RegExp>
+			<RegExp input="$$1" output="&lt;uniqueid&gt;$$12&lt;/uniqueid&gt;" dest="4">
+				<expression/>
+			</RegExp>
+			<RegExp input="$$8" output="&lt;plot&gt;\1&lt;/plot&gt;" dest="4+">
+				<expression>&lt;Overview&gt;([^&lt;]*)&lt;/Overview&gt;</expression>
+			</RegExp>
+			<RegExp input="$$8" output="\1" dest="6">
+				<expression noclean="1">&lt;Writer&gt;([^&lt;]*)&lt;/Writer&gt;</expression>
+			</RegExp>
+			<RegExp input="$$6" output="&lt;credits&gt;\1&lt;/credits&gt;" dest="4+">
+				<expression repeat="yes">([^\|]*)\|</expression>
+			</RegExp>
+			<RegExp input="$$6" output="&lt;credits&gt;\1&lt;/credits&gt;" dest="4+">
+				<expression repeat="yes">([^,]*),</expression>
+			</RegExp>
+			<RegExp input="$$6" output="&lt;credits&gt;\1&lt;/credits&gt;" dest="4+">
+				<expression>([^\|,]+)$</expression>
+			</RegExp>
+			<RegExp input="$$8" output="\1" dest="6">
+				<expression noclean="1">&lt;Director&gt;([^&lt;]*)&lt;/Director&gt;</expression>
+			</RegExp>
+			<RegExp input="$$6" output="&lt;director&gt;\1&lt;/director&gt;" dest="4+">
+				<expression repeat="yes">([^\|]*)\|</expression>
+			</RegExp>
+			<RegExp input="$$6" output="&lt;director&gt;\1&lt;/director&gt;" dest="4+">
+				<expression repeat="yes">([^,]*),</expression>
+			</RegExp>
+			<RegExp input="$$6" output="&lt;director&gt;\1&lt;/director&gt;" dest="4+">
+				<expression>([^\|,]+)$</expression>
+			</RegExp>
+			<RegExp input="$$8" output="\1" dest="6">
+				<expression noclean="1">&lt;GuestStars&gt;([^&lt;]*)&lt;/GuestStars&gt;</expression>
+			</RegExp>
+			<RegExp input="$$6" output="&lt;actor&gt;&lt;name&gt;\1&lt;/name&gt;&lt;/actor&gt;" dest="4+">
+				<expression repeat="yes">([^\|]*)\|</expression>
+			</RegExp>
+			<RegExp input="$$6" output="&lt;actor&gt;&lt;name&gt;\1&lt;/name&gt;&lt;/actor&gt;" dest="4+">
+				<expression repeat="yes">([^,]*),</expression>
+			</RegExp>
+			<RegExp input="$$6" output="&lt;actor&gt;&lt;name&gt;\1&lt;/name&gt;&lt;/actor&gt;" dest="4+">
+				<expression>([^\|,]+)$</expression>
+			</RegExp>
+			<RegExp input="$$8" output="&lt;title&gt;\1&lt;/title&gt;" dest="4+">
+				<expression>&lt;EpisodeName&gt;([^&lt;]*)&lt;/EpisodeName&gt;</expression>
+			</RegExp>
+			<!-- Normal Season/Episodes -->
+			<RegExp input="$$9" output="&lt;season&gt;\1&lt;/season&gt;" dest="4+">
+				<RegExp input="$$8" output="\1" dest="9">
+					<expression clear="yes">&lt;SeasonNumber&gt;([^&lt;]*)&lt;/SeasonNumber&gt;</expression>
+				</RegExp>
+				<expression/>
+			</RegExp>
+			<RegExp input="$$9" output="&lt;episode&gt;\1&lt;/episode&gt;" dest="4+">
+				<RegExp input="$$8" output="\1" dest="9">
+					<expression clear="yes">&lt;EpisodeNumber&gt;([^&lt;]*)&lt;/EpisodeNumber&gt;</expression>
+				</RegExp>
+				<expression/>
+			</RegExp>
+			<RegExp input="$$8" output="&lt;thumb&gt;http://thetvdb.com/banners/\1&lt;/thumb&gt;" dest="4+">
+				<expression>&lt;filename&gt;([^&lt;]+)&lt;/filename&gt;</expression>
+			</RegExp>
+			<RegExp input="$$8" output="&lt;aired&gt;\1&lt;/aired&gt;" dest="4+">
+				<expression>&lt;FirstAired&gt;([^&lt;]+)&lt;/FirstAired&gt;</expression>
+			</RegExp>
+			<RegExp input="$$8" output="&lt;displayseason&gt;\1&lt;/displayseason&gt;" dest="4+">
+				<expression>&lt;airsbefore_season&gt;([^&lt;]+)&lt;/airsbefore_season&gt;</expression>
+			</RegExp>
+			<RegExp input="$$8" output="&lt;displayepisode&gt;\1&lt;/displayepisode&gt;" dest="4+">
+				<expression>&lt;airsbefore_episode&gt;([^&lt;]+)&lt;/airsbefore_episode&gt;</expression>
+			</RegExp>
+			<RegExp input="$$8" output="&lt;displayafterseason&gt;\1&lt;/displayafterseason&gt;" dest="4+">
+				<expression>&lt;airsafter_season&gt;([^&lt;]+)&lt;/airsafter_season&gt;</expression>
+			</RegExp>
+			<RegExp input="$$8" output="&lt;rating&gt;\1&lt;/rating&gt;" dest="4+">
+				<expression>&lt;Rating&gt;([^&lt;]+)&lt;/Rating&gt;</expression>
+			</RegExp>
+			<RegExp input="$$1" output="&lt;runtime&gt;\1&lt;/runtime&gt;" dest="4+">
+				<expression>&lt;Runtime&gt;([^&lt;]+)&lt;/Runtime&gt;</expression>
+			</RegExp>
+			<expression noclean="1"/>
+		</RegExp>
+	</GetTVDBEpisodeDetails>
+</scraper>

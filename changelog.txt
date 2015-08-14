@@ -1,0 +1,29 @@
+2.0.6
+
+Changes
+- correct <start> to <premiered> tag
+
+2.0.5
+
+Changes
+- set <originaltitle> with parsing web page
+
+2.0.4
+
+Changes
+- improve cast parsing for variety show
+
+2.0.3
+
+Changes
+- new option to allow dummy episodes for long series(24 vs 100)
+
+2.0.0
+
+Changes
+- full revision based on JSON API
+
+1.0.1
+
+Changes
+- Initial addon version

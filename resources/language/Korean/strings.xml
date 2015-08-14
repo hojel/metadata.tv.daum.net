@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<strings>
+    <string id="30000">기본</string>
+    <string id="30001">고급</string>
+    <string id="30002">thetvdb.org 팬아트 사용</string>
+    <string id="30003">제목에서 시즌 유추</string>
+    <string id="30004">제목에서 시즌 제거</string>
+    <string id="30005">깨끗한 줄거리</string>
+    <string id="30006">thetvdb.org에서 없는 회차 검색</string>
+    <string id="30007">시즌 보정 정보 주소</string>
+    <string id="30008">에피소드 없는 긴 시리즈 지원</string>
+</strings>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<strings>
+    <string id="30000">Basic</string>
+    <string id="30001">Advanced</string>
+    <string id="30002">Additional Fanart from thetvdb.org</string>
+    <string id="30003">Guess Season from Title</string>
+    <string id="30004">Remove Season from Title</string>
+    <string id="30005">Clean Synopsys Text</string>
+    <string id="30006">Fallback to episodes in thetvdb.org</string>
+    <string id="30007">URL for Season Mapping Table</string>
+    <string id="30008">Generate Dummy Episode for Long Series</string>
+</strings>
