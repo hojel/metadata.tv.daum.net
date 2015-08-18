@@ -1,7 +1,7 @@
-2.0.6
+2.1.0
 
 Changes
-- correct <start> to <premiered> tag
+- reflect website change. episode json is embedded in mobile web page
 
 2.0.5
 
