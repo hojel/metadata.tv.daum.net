@@ -2,7 +2,10 @@
 
 Changes
 - search url is changed
+<<<<<<< HEAD
 - desktop pages are replaced by mobile pages
+=======
+>>>>>>> 60c2c6688e818f7ca640f02e6ab55881b6db8bf5
 
 2.2.0
 
