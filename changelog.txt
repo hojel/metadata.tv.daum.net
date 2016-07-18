@@ -1,3 +1,16 @@
+2.3.0
+
+Changes
+- search url is changed
+- desktop pages are replaced by mobile pages
+
+2.2.0
+
+Changes
+- info is no more serviced in json format
+- photo is no more serviced
+- parse mobile page to extract metadata
+
 2.1.0
 
 Changes
