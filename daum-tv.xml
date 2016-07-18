@@ -1,11 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <scraper framework="1.1" date="2013-01-30" language="ko">
 	<NfoUrl dest="3">
-<<<<<<< HEAD
 		<RegExp input="$$1" output="&lt;details&gt;&lt;url cache=&quot;daum-tv-\1.html&quot;&gt;http://movie.daum.net/tv/main?tvProgramId=\1&lt;/url&gt;&lt;id&gt;\1&lt;/id&gt;&lt;/details&gt;" dest="3">
-=======
-		<RegExp input="$$1" output="&lt;details&gt;&lt;url cache=&quot;daum-tv-\1.html&quot;&gt;http://m.movie.daum.net/m/tv/main?tvProgramId=\1&lt;/url&gt;&lt;id&gt;\1&lt;/id&gt;&lt;/details&gt;" dest="3">
->>>>>>> 60c2c6688e818f7ca640f02e6ab55881b6db8bf5
 			<expression>movie\.daum\.net[^\?]*\?tvProgramId=(\d+)</expression>
 		</RegExp>
 	</NfoUrl>
@@ -15,23 +11,14 @@
 		</RegExp>
 	</EpisodeGuideUrl>
 	<CreateSearchUrl dest="3">
-<<<<<<< HEAD
 		<RegExp input="$$1 $$2" output="&lt;url&gt;http://movie.daum.net/data/movie/search/v2/tv.json?size=20&amp;start=1&amp;searchText=\1&lt;/url&gt;" dest="3">
-=======
-		<RegExp input="$$1 $$2" output="&lt;url&gt;http://m.movie.daum.net/data/movie/search/v2/tv.json?size=20&amp;start=1&amp;searchText=\1&lt;/url&gt;" dest="3">
->>>>>>> 60c2c6688e818f7ca640f02e6ab55881b6db8bf5
 			<expression noclean="1" trim="1" />
 		</RegExp>
 	</CreateSearchUrl>
 	<GetSearchResults dest="1">
 		<RegExp input="$$4" output="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;&lt;results&gt;\1&lt;/results&gt;" dest="1">
-<<<<<<< HEAD
 			<RegExp input="$$1" output="&lt;entity&gt;&lt;title&gt;\2&lt;/title&gt;&lt;year&gt;\4&lt;/year&gt;&lt;id&gt;\1&lt;/id&gt;&lt;url cache=&quot;daum-tv-\1.html&quot;&gt;http://movie.daum.net/tv/main?tvProgramId=\1&lt;/url&gt;&lt;/entity&gt;" dest="4">
 				<expression repeat="yes" trim="2,3">"tvProgramId":(\d+),"titleKo":"([^"]*)","titleEn":"?([^",]*)"?,[^}]*"prodYear":(\d*)</expression>
-=======
-			<RegExp input="$$1" output="&lt;entity&gt;&lt;title&gt;\2&lt;/title&gt;&lt;year&gt;\4&lt;/year&gt;&lt;id&gt;\1&lt;/id&gt;&lt;url cache=&quot;daum-tv-\1.html&quot;&gt;http://m.movie.daum.net/m/tv/main?tvProgramId=\1&lt;/url&gt;&lt;/entity&gt;" dest="4">
-				<expression repeat="yes" trim="2,3">"tvProgramId":(\d+),"titleKo":"([^"]*)","titleEn":"([^"]*)",[^}]*"prodYear":(\d*)</expression>
->>>>>>> 60c2c6688e818f7ca640f02e6ab55881b6db8bf5
 			</RegExp>
 			<expression noclean="1"/>
 		</RegExp>
@@ -43,29 +30,20 @@
 			</RegExp>
 			<RegExp input="$$6" output="&lt;title&gt;\1&lt;/title&gt;" dest="5+">
 				<RegExp input="$$1" output="\1" dest="6">
-<<<<<<< HEAD
 					<expression>class="tit_movie"&gt;(.*?)&lt;</expression>
-=======
-					<expression>class="tit_program"&gt;(.*?)&lt;</expression>
->>>>>>> 60c2c6688e818f7ca640f02e6ab55881b6db8bf5
 				</RegExp>
 				<RegExp conditional="RemoveSeasonFromTitle" input="$$6" output="\1" dest="6">
 					<expression trim="1">^(.*) 시즌 *(\d+) *$</expression>
 				</RegExp>
 				<expression />
 			</RegExp>
-<<<<<<< HEAD
 			<!-- BUG: original(or english) title is missing !!!
-=======
-			<!-- BUG: original title is not set for Mobile!!!
->>>>>>> 60c2c6688e818f7ca640f02e6ab55881b6db8bf5
 			<RegExp input="$$1" output="&lt;originaltitle&gt;\1&lt;/originaltitle&gt;" dest="5+">
 				<expression>class="tit_original"&gt;(.*?)&lt;</expression>
 			</RegExp>
 			-->
 			<RegExp input="$$6" output="\1" dest="5+">
 				<RegExp input="$$1" output="\1" dest="7">
-<<<<<<< HEAD
 					<expression noclean="1">class="list_movie"&gt;(.*?)&lt;/dl&gt;</expression>
 				</RegExp>
 				<RegExp input="$$7" output="&lt;year&gt;\1&lt;/year&gt;&lt;premiered&gt;\1-\2-\3&lt;/premiered&gt;" dest="6">
@@ -81,38 +59,11 @@
 			</RegExp>
 			<RegExp conditional="!CleanPlotText" input="$$1" output="&lt;plot&gt;\1&lt;/plot&gt;" dest="5+">
 				<expression>"desc_movie"&gt;(.*?)&lt;/p&gt;</expression>
-=======
-					<expression noclean="1">detail_station"&gt;(.*?)&lt;/dl&gt;</expression>
-				</RegExp>
-				<RegExp input="$$7" output="&lt;year&gt;\1&lt;/year&gt;&lt;premiered&gt;\1-\2-\3&lt;/premiered&gt;" dest="6">
-					<expression>"txt_bar"&gt;&lt;/span&gt;(\d{4})\.(\d{2})\.(\d{2})</expression>
-				</RegExp>
-				<RegExp input="$$7" output="&lt;studio&gt;\1&lt;/studio&gt;" dest="6+">
-					<expression>&lt;dt class="tit_detail"&gt;(.*?)&lt;/dt&gt;</expression>
-				</RegExp>
-				<expression noclean="1"/>
-			</RegExp>
-			<RegExp input="$$6" output="\1" dest="5+">
-				<RegExp input="$$1" output="\1" dest="7">
-					<expression noclean="1">detail_cate"&gt;(.*?)&lt;/dl&gt;</expression>
-				</RegExp>
-				<RegExp input="$$7" output="&lt;genre&gt;\1&lt;/genre&gt;" dest="6">
-					<expression repeat="yes">&lt;dd class="txt_detail"&gt;(.*?)&lt;</expression>
-				</RegExp>
-				<expression noclean="1"/>
-			</RegExp>
-			<RegExp conditional="!CleanPlotText" input="$$1" output="&lt;plot&gt;\1&lt;/plot&gt;" dest="5+">
-				<expression>"desc_tv"&gt;(.*?)&lt;/p&gt;</expression>
->>>>>>> 60c2c6688e818f7ca640f02e6ab55881b6db8bf5
 			</RegExp>
 			<RegExp conditional="CleanPlotText" input="$$6" output="&lt;plot&gt;\1&lt;/plot&gt;" dest="5+">
 				<RegExp input="$$7" output="\1" dest="6">
 					<RegExp input="$$1" output="\1" dest="7">
-<<<<<<< HEAD
 						<expression>"desc_movie"&gt;(.*?)&lt;/p&gt;</expression>
-=======
-						<expression>"desc_tv"&gt;(.*?)&lt;/p&gt;</expression>
->>>>>>> 60c2c6688e818f7ca640f02e6ab55881b6db8bf5
 					</RegExp>
 					<expression repeat="yes" noclean="1">(?:\\r|(\\[^r]|[^\\]))</expression>
 				</RegExp>
@@ -124,34 +75,19 @@
 			</RegExp>
 			-->
 			<RegExp input="$$1" output="&lt;rating&gt;\1&lt;/rating&gt;" dest="5+">
-<<<<<<< HEAD
 				<expression>class="score_rating"&gt;\s*(\d\.\d)</expression>
-=======
-				<expression>ico_averstar"&gt;&lt;/span&gt;\s*(\d\.\d)</expression>
->>>>>>> 60c2c6688e818f7ca640f02e6ab55881b6db8bf5
 			</RegExp>
 			<!-- <votes> -->
 			<!-- poster thumb -->
 			<RegExp input="$$1" output="&lt;thumb aspect=&quot;poster&quot;&gt;\1&lt;/thumb&gt;" dest="5+">
-<<<<<<< HEAD
 				<expression>src="([^"]*)" +class="img_summary"</expression>
-=======
-				<expression>src="([^"]*)" +class="thumb_program"</expression>
->>>>>>> 60c2c6688e818f7ca640f02e6ab55881b6db8bf5
 			</RegExp>
 			<!-- Nowhere to find TitleEn anymore !!!
 			<RegExp input="$$2" output="&lt;url function=&quot;ParseDaumMoviePage&quot; cache=&quot;daum-movie-\1.html&quot;&gt;http://movie.daum.net/tv/detail/main.do?tvProgramId=\1&lt;/url&gt;" dest="5+">
 				<expression />
 			</RegExp>
-<<<<<<< HEAD
 			-->
 			<RegExp input="$$2" output="&lt;url function=&quot;ParseDaumCast&quot; cache=&quot;daum-tcast-\1.html&quot;&gt;http://movie.daum.net/data/movie/tv/cast_crew.json?pageNo=1&amp;pageSize=100&amp;tvProgramId=\1&lt;/url&gt;" dest="5+">
-=======
-			<RegExp input="$$2" output="&lt;url function=&quot;ParseDaumCast&quot; cache=&quot;daum-tcast-\1.html&quot;&gt;http://m.movie.daum.net/m/tv/crew?tvProgramId=\1&lt;/url&gt;" dest="5+">
-				<expression />
-			</RegExp>
-			<RegExp input="$$2" output="&lt;url function=&quot;ParseDaumStaff&quot; cache=&quot;daum-tstaff-\1.html&quot;&gt;http://m.movie.daum.net/m/tv/crew?tvProgramId=\1&amp;type=staff&lt;/url&gt;" dest="5+">
->>>>>>> 60c2c6688e818f7ca640f02e6ab55881b6db8bf5
 				<expression />
 			</RegExp>
 			<!-- BUG: TitleEn is missing !!!
@@ -214,15 +150,9 @@
 		<RegExp input="$$5" output="&lt;details&gt;\1&lt;/details&gt;" dest="4">
 			<RegExp input="$$6" output="&lt;actor&gt;&lt;name&gt;\1&lt;/name&gt;&lt;role&gt;\2&lt;/role&gt;&lt;thumb&gt;\3&lt;/thumb&gt;&lt;/actor&gt;" dest="5">
 				<RegExp input="$$1" output="\1" dest="6">
-<<<<<<< HEAD
 					<expression>"data":\[(.*?)\]</expression>
 				</RegExp>
 				<expression repeat="yes">"nameKo":"([^"]*)"[^}]*"fullname":"([^"]*)"[^}]*}[^}]*"castcrewCastName":"(?:진행|주연|출연|특별출연|이전 출연)","castcrewTitleKo":"([^"]*)"</expression>
-=======
-					<expression>init\(\d+, *(\[.*?\]),</expression>
-				</RegExp>
-				<expression repeat="yes">"name" *: *"([^"]*)"[^}]*"characterName" *: *"([^"]*)"[^}]*"characterMainImageUrl" *: *"([^"]*)"</expression>
->>>>>>> 60c2c6688e818f7ca640f02e6ab55881b6db8bf5
 			</RegExp>
 			<expression noclean="1"/>
 		</RegExp>
@@ -232,16 +162,8 @@
 			<RegExp input="$$1" output="\1" dest="6">
 				<expression>init\(\d+, *(\[.*?\]),</expression>
 			</RegExp>
-<<<<<<< HEAD
 			<RegExp input="$$1" output="&lt;credits&gt;\1&lt;/credits&gt;" dest="5+">
 				<expression>"nameKo":"([^"]*)"[^}]*}[^}]*"castcrewCastName":"(?:극본|각본)"</expression>
-=======
-			<RegExp input="$$6" output="&lt;director&gt;\1&lt;/director&gt;" dest="5">
-				<expression>"name" *: *"([^"]*)"[^}]*"type" *: *"연출"</expression>
-			</RegExp>
-			<RegExp input="$$6" output="&lt;credits&gt;\1&lt;/credits&gt;" dest="5+">
-				<expression>"name" *: *"([^"]*)"[^}]*"type" *: *"극본"</expression>
->>>>>>> 60c2c6688e818f7ca640f02e6ab55881b6db8bf5
 			</RegExp>
 			<expression noclean="1"/>
 		</RegExp>
@@ -275,11 +197,7 @@
 	-->
 	<GetEpisodeListByIdChain dest="4">
 		<RegExp input="$$5" output="&lt;episodeguide&gt;\1&lt;/episodeguide&gt;" dest="4">
-<<<<<<< HEAD
 			<RegExp input="$$1" output="&lt;url function=&quot;GetEpisodeListById&quot; cache=&quot;daum-tv-\1.html&quot;&gt;http://movie.daum.net/tv/main?tvProgramId=\1&lt;/url&gt;" dest="5">
-=======
-			<RegExp input="$$1" output="&lt;url function=&quot;GetEpisodeListById&quot; cache=&quot;daum-tv-\1.html&quot;&gt;http://m.movie.daum.net/m/tv/main?tvProgramId=\1&lt;/url&gt;" dest="5">
->>>>>>> 60c2c6688e818f7ca640f02e6ab55881b6db8bf5
 				<expression />
 			</RegExp>
 			<expression noclean="1" />
