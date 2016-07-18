@@ -148,26 +148,18 @@
 	</GetEpisodeDetails>
 	<ParseDaumCast dest="4">
 		<RegExp input="$$5" output="&lt;details&gt;\1&lt;/details&gt;" dest="4">
-			<RegExp input="$$6" output="&lt;actor&gt;&lt;name&gt;\1&lt;/name&gt;&lt;role&gt;\2&lt;/role&gt;&lt;thumb&gt;\3&lt;/thumb&gt;&lt;/actor&gt;" dest="5">
-				<RegExp input="$$1" output="\1" dest="6">
-					<expression>"data":\[(.*?)\]</expression>
-				</RegExp>
+			<RegExp input="$$1" output="&lt;actor&gt;&lt;name&gt;\1&lt;/name&gt;&lt;role&gt;\3&lt;/role&gt;&lt;thumb&gt;\2&lt;/thumb&gt;&lt;/actor&gt;" dest="5">
 				<expression repeat="yes">"nameKo":"([^"]*)"[^}]*"fullname":"([^"]*)"[^}]*}[^}]*"castcrewCastName":"(?:진행|주연|출연|특별출연|이전 출연)","castcrewTitleKo":"([^"]*)"</expression>
+			</RegExp>
+			<RegExp input="$$1" output="&lt;director&gt;\1&lt;/director&gt;" dest="5+">
+				<expression repeat="yes">"nameKo":"([^"]*)"[^}]*}[^}]*"castcrewCastName":"(?:연출|감독)"</expression>
+			</RegExp>
+			<RegExp input="$$1" output="&lt;credits&gt;\1&lt;/credits&gt;" dest="5+">
+				<expression repeat="yes">"nameKo":"([^"]*)"[^}]*}[^}]*"castcrewCastName":"(?:극본|각본)"</expression>
 			</RegExp>
 			<expression noclean="1"/>
 		</RegExp>
 	</ParseDaumCast>
-	<ParseDaumStaff dest="4">
-		<RegExp input="$$5" output="&lt;details&gt;\1&lt;/details&gt;" dest="4">
-			<RegExp input="$$1" output="\1" dest="6">
-				<expression>init\(\d+, *(\[.*?\]),</expression>
-			</RegExp>
-			<RegExp input="$$1" output="&lt;credits&gt;\1&lt;/credits&gt;" dest="5+">
-				<expression>"nameKo":"([^"]*)"[^}]*}[^}]*"castcrewCastName":"(?:극본|각본)"</expression>
-			</RegExp>
-			<expression noclean="1"/>
-		</RegExp>
-	</ParseDaumStaff>
 	<!-- guessing meaning of photoCategory
 		1: 고해상도 포스터
 		2: 고해상도 팬아트
