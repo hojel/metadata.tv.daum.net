@@ -10,5 +10,6 @@
 	<setting label="30005" type="bool" id="CleanPlotText" default="true"/>
 	<setting label="30007" type="text" id="SeasonMapURL" default="https://sites.google.com/site/xbmckorea/table/daumtv_extra.json"/>
 	<setting label="30008" type="bool" id="ManyDummyEp" default="false"/>
+	<setting label="30009" type="bool" id="CastJson" default="false"/>
     </category>
 </settings>

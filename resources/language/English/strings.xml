@@ -9,4 +9,5 @@
     <string id="30006">Fallback to episodes in thetvdb.org</string>
     <string id="30007">URL for Season Mapping Table</string>
     <string id="30008">Generate Dummy Episode for Long Series</string>
+    <string id="30009">Cast info from JSON page</string>
 </strings>
